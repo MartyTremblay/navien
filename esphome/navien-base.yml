@@ -24,7 +24,7 @@ ${platform}:
   board: ${board}
 
 external_components:
-  - source: ${external_component_source}
+  - source: github://MartyTremblay/navien@add-waveshare-esp32s3-rs485can-board
 
 api:
 
