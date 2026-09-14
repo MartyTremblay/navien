@@ -44,7 +44,7 @@ logger:
   baud_rate: 0 #disable logging over uart
 
 dashboard_import:
-  package_import_url: github://MartyTremblay/navien/esphome/navien-esphome-waveshare-esp32s3-rs485can.yml@add-waveshare-esp32s3-rs485can-board
+  package_import_url: github://MartyTremblay/navien/esphome/navien-esphome-waveshare-esp32s3-rs485can.yml@personal-waveshare-deploy
   import_full_config: false
 
 button:
