@@ -21,6 +21,11 @@ substitutions:
   friendly_name: Navien
   project_name: Navien.Waveshare-ESP32S3-RS485CAN
   project_version: "0.0.0.1"
+  # Local relative path only works when compiling from a local clone. Overridden
+  # here (personal fork/branch only, not part of the upstream PR) so Home
+  # Assistant's ESPHome dashboard can fetch the custom component over the network
+  # when building from the dashboard_import URL instead.
+  external_component_source: github://MartyTremblay/navien@add-waveshare-esp32s3-rs485can-board
 
 esp32:
   framework:
