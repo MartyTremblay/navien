@@ -89,7 +89,7 @@ sensor:
       name: "${friendly_name} Water Flow${sensor_suffix}"
       filters:
         - lambda: return x / 3.785;
-      unit_of_measurement: "GPM"
+      unit_of_measurement: "gal/min"
       device_class: volume_flow_rate
       state_class: measurement
     water_utilization:  
