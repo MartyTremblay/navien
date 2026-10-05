@@ -520,9 +520,9 @@ void NavienBase::send_scheduled_recirculation_off_cmd() {
       case HEATING_MODE_IDLE:
         return "Idle";
       case HEATING_MODE_SPACE_HEATING:
-      case HEATING_MODE_SPACE_HEATING_NHB_H:
         return "Space Heating";
       case HEATING_MODE_DOMESTIC_HOT_WATER_DEMAND:
+      case HEATING_MODE_DOMESTIC_HOT_WATER_INDIRECT:
         return "Domestic Hot Water";
       case HEATING_MODE_DOMESTIC_HOT_WATER_RECIRCULATING:
         return "DHW Recirculating";
