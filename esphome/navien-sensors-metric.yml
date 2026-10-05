@@ -1,0 +1,148 @@
+# Metric variant of navien-sensors.yml: temperatures in °C, flow in L/min,
+# gas in m³ and kW. Use instead of navien-sensors.yml, not alongside it.
+
+substitutions:
+  sensor_suffix: ""
+
+text_sensor:
+  - platform: navien
+    navien: navien_main
+    name: "${friendly_name} Heating Mode"
+    id: heating_mode
+    heating_mode: true
+  - platform: navien
+    navien: navien_main
+    name: "${friendly_name} Device Type"
+    id: device_type
+    device_type: true
+  - platform: navien
+    navien: navien_main
+    name: "${friendly_name} Operating State"
+    id: operating_state
+    operating_state: true
+  - platform: navien
+    navien: navien_main
+    name: "${friendly_name} Controller Version"
+    id: controller_version
+    controller_version: true
+  - platform: navien
+    navien: navien_main
+    name: "${friendly_name} Panel Version"
+    id: panel_version 
+    panel_version: true
+
+sensor:
+  - platform: navien
+    id: navien_main
+    src: 0
+    name: "${friendly_name} Metrics"
+    uart_id: main_hw_uart
+    dhw_set_temperature:
+      id: navien_dhw_set_temperature
+      name: "${friendly_name} DHW Set Temp${sensor_suffix}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+    inlet_temperature:
+      name: "${friendly_name} Inlet Temp${sensor_suffix}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+    outlet_temperature:
+      name: "${friendly_name} Outlet Temp${sensor_suffix}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+    sh_set_temperature:
+      name: "${friendly_name} SH Set Temp${sensor_suffix}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+    sh_outlet_temperature:
+      name: "${friendly_name} SH Outlet Temp${sensor_suffix}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+    sh_return_temperature:
+      name: "${friendly_name} SH Return Temp${sensor_suffix}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+    outdoor_temperature:
+      name: "${friendly_name} Outdoor Temp${sensor_suffix}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+      disabled_by_default: true
+    water_flow:
+      name: "${friendly_name} Water Flow${sensor_suffix}"
+      unit_of_measurement: "L/min"
+      device_class: volume_flow_rate
+      state_class: measurement
+    water_utilization:  
+      name: "${friendly_name} Water Capacity Utilization${sensor_suffix}"
+      unit_of_measurement: "%"
+    heat_capacity:
+      name: "${friendly_name} Heat Capacity${sensor_suffix}"
+      unit_of_measurement: "%"
+      accuracy_decimals: 1
+    gas_total:
+      id: gas_total_m3
+      name: "${friendly_name} Accumulated Gas Usage${sensor_suffix}"
+      # Navien reports accumulated gas in m³/10.
+      filters:
+        - lambda: return x / 10.0;
+      unit_of_measurement: "m³"
+      device_class: gas
+      state_class: total_increasing
+      accuracy_decimals: 1
+    gas_current:
+      id: gas_current_kw
+      name: "${friendly_name} Current Gas Usage${sensor_suffix}"
+      # Navien reports instantaneous gas usage in 10x kcal/hr.
+      # The 10x factor is confirmed by comparing against the reported
+      # heat capacity percentage. 1 kW = 859.845 kcal/hr.
+      filters:
+        - lambda: return x * 10.0 / 859.845;
+      unit_of_measurement: "kW"
+      device_class: power
+      state_class: measurement
+      accuracy_decimals: 1
+    total_dhw_usage:
+      name: "${friendly_name} Total DHW Uses${sensor_suffix}"
+      accuracy_decimals: 0
+    total_operating_time:
+      name: "${friendly_name} Total Operating Time${sensor_suffix}"
+      unit_of_measurement: "H"
+    total_dhw_usage_hours:
+      name: "${friendly_name} Total DHW Operating Time${sensor_suffix}"
+      unit_of_measurement: "H"
+    total_sh_usage_hours:
+      name: "${friendly_name} Total SH Operating Time${sensor_suffix}"
+      unit_of_measurement: "H"
+    days_since_install:
+      name: "${friendly_name} Days Since Install${sensor_suffix}"
+      accuracy_decimals: 0
+    conn_status:
+      id: conn_status
+      name: "${friendly_name} Connection Status${sensor_suffix}"
+    recirc_mode:
+      id: recirc_mode
+      name: "${friendly_name} Recirculation Mode${sensor_suffix}"
+    boiler_active:
+      id: boiler_active
+      name: "${friendly_name} Boiler Active${sensor_suffix}"
+    recirc_running:
+      id: recirc_running
+      name: "${friendly_name} Recirculation Running${sensor_suffix}"
+    # this will be true if another NaviLink device is also connected
+    other_navilink_installed:
+      id: other_navilink_installed
+      name: "${friendly_name} Other NaviLink Installed${sensor_suffix}"
+    error_code:
+      id: error_code
+      name: "${friendly_name} Error Code${sensor_suffix}"
+    error_level:
+      id: error_level
+      name: "${friendly_name} Error Level${sensor_suffix}"
+
