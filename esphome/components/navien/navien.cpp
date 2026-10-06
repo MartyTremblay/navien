@@ -84,6 +84,15 @@ void NavienBase::send_scheduled_recirculation_off_cmd() {
   void Navien::setup() {
     NavienBase::setup();
     this->state.power = POWER_OFF;
+    this->error_count_pref_ = global_preferences->make_preference<uint32_t>(fnv1_hash("navien_error_count"));
+    if (!this->error_count_pref_.load(&this->error_count_))
+      this->error_count_ = 0;
+  }
+
+  bool Navien::error_latch_active_() {
+    if (this->error_latched_ && millis() - this->error_seen_ms_ >= ERROR_LATCH_MS)
+      this->error_latched_ = false;
+    return this->error_latched_;
   }
 
   void Navien::on_water(const WATER_DATA & water, uint8_t src){
@@ -159,6 +168,19 @@ void NavienBase::send_scheduled_recirculation_off_cmd() {
 
     this->state.water.error_code = water.error_code_hi << 8 | water.error_code_lo;
     this->state.water.error_level = water.error_level;
+
+    if (this->state.water.error_code != 0) {
+      if (!this->error_latch_active_()) {
+        this->error_count_++;
+        this->error_count_pref_.save(&this->error_count_);
+        ESP_LOGW(TAG, "Error %u (level %u) reported, event #%u", this->state.water.error_code,
+                 this->state.water.error_level, (unsigned) this->error_count_);
+      }
+      this->error_latched_ = true;
+      this->error_seen_ms_ = millis();
+      this->latched_error_code_ = this->state.water.error_code;
+      this->latched_error_level_ = this->state.water.error_level;
+    }
 
     if (this->is_rt)
       this->update_water_sensors();
@@ -383,11 +405,12 @@ void NavienBase::send_scheduled_recirculation_off_cmd() {
       std::string operating_state_str = op_state_to_str(this->state.operating_state);
       this->operating_state_sensor->publish_state(operating_state_str);
     }
+    const bool latched = this->error_latch_active_();
     if (this->error_code_sensor != nullptr){
-        this->error_code_sensor->publish_state(this->state.water.error_code);
+        this->error_code_sensor->publish_state(latched ? this->latched_error_code_ : this->state.water.error_code);
     }
     if (this->error_level_sensor != nullptr){
-        this->error_level_sensor->publish_state(this->state.water.error_level);
+        this->error_level_sensor->publish_state(latched ? this->latched_error_level_ : this->state.water.error_level);
     }
   }
 

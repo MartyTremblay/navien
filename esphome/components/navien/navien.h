@@ -4,6 +4,7 @@
 #include <list>
 
 #include "esphome/core/component.h"
+#include "esphome/core/preferences.h"
 #include "esphome/components/button/button.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
@@ -310,6 +311,10 @@ namespace navien {
     int water_byte(uint8_t offset) const { return raw_byte_(water_raw_, water_raw_len_, offset); }
     int gas_byte(uint8_t offset) const { return raw_byte_(gas_raw_, gas_raw_len_, offset); }
 
+    // Error events counted since first boot (survives restarts). An event is
+    // the start of an error latch, see on_water().
+    uint32_t error_count() const { return error_count_; }
+
   protected:
     static int raw_byte_(const uint8_t *raw, uint8_t len, uint8_t offset) {
       return (offset >= HDR_SIZE && offset - HDR_SIZE < len) ? raw[offset - HDR_SIZE] : -1;
@@ -318,6 +323,18 @@ namespace navien {
     uint8_t water_raw_len_ = 0;
     uint8_t gas_raw_[sizeof(GAS_DATA)] = {};
     uint8_t gas_raw_len_ = 0;
+
+    // An error can clear within one 5 s publish interval. Hold the last
+    // non-zero error code for ERROR_LATCH_MS after it was last seen so
+    // the published sensor always shows it.
+    static const uint32_t ERROR_LATCH_MS = 60000;
+    bool error_latched_ = false;
+    uint32_t error_seen_ms_ = 0;
+    uint16_t latched_error_code_ = 0;
+    uint8_t latched_error_level_ = 0;
+    uint32_t error_count_ = 0;
+    ESPPreferenceObject error_count_pref_;
+    bool error_latch_active_();
 
     // Debug helper to print hex buffers
     static void print_buffer(const uint8_t *data, size_t length);
