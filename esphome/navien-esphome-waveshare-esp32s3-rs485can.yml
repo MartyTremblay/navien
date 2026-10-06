@@ -76,3 +76,22 @@ number:
     set_action:
       - lambda: |-
           id(navien_main).send_sh_set_temp_cmd(x);
+
+  # Existing DHW setpoint command, as a control for the transport check: if
+  # this applies but SH Setpoint doesn't, commands reach the unit and the
+  # NHB-H just ignores the SH command. Range from the NHB manual (40-82 C).
+  - platform: template
+    name: "${friendly_name} DHW Setpoint"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    min_value: 40
+    max_value: 82
+    step: 0.5
+    mode: box
+    update_interval: 2s
+    lambda: |-
+      if (!id(navien_main).has_data()) return NAN;
+      return id(navien_dhw_set_temperature).state;
+    set_action:
+      - lambda: |-
+          id(navien_main).send_dhw_set_temp_cmd(x);
