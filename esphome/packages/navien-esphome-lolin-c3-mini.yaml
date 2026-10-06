@@ -1,20 +1,27 @@
+# Dashboard-importable package for the LOLIN/WEMOS C3 Mini.
+#
+# Connect GPIO21 (TX) and GPIO20 (RX) only to the logic side of a 3.3 V-
+# compatible RS-485 transceiver. Never connect the Navien RS-485 pair or its
+# approximately 13 V supply directly to an ESP32-C3 GPIO pin.
+
 substitutions:
-  device_name: navien
+  device_name: navien-c3-mini
   friendly_name: Navien
-  tx_pin: GPIO6
-  rx_pin: GPIO5
+  tx_pin: GPIO21
+  rx_pin: GPIO20
 
 esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
   name_add_mac_suffix: true
   project:
-    name: htumanyan.navien-atoms3-rs485base
+    name: Navien.LOLIN-C3-Mini-ESP32
     version: "1.0.0"
 
 esp32:
-  board: m5stack-atoms3
-  variant: esp32s3
+  board: lolin_c3_mini
+  variant: esp32c3
+  flash_size: 4MB
   framework:
     type: esp-idf
 
@@ -25,7 +32,7 @@ wifi:
 
 packages:
   navien_base:
-    url: https://github.com/htumanyan/esphome-navien
+    url: https://github.com/htumanyan/navien
     ref: main
     files: [esphome/packages/navien-base.yaml]
     refresh: 30s
@@ -33,20 +40,20 @@ packages:
 # LED: green when API connected, off otherwise
 light:
   - platform: esp32_rmt_led_strip
-    id: atom_led
+    id: lolin_c3_mini_led
     internal: true
-    pin: GPIO35
+    pin: GPIO7
     num_leds: 1
-    rgb_order: GRB
+    channel_colors: GRB
     chipset: WS2812
   - platform: status_led
-    id: atom_status_led
+    id: lolin_c3_mini_status_led
     internal: true
-    output: atom_status_output
+    output: lolin_c3_mini_status_output
 
 output:
   - platform: template
-    id: atom_status_output
+    id: lolin_c3_mini_status_output
     type: binary
     write_action:
       - if:
@@ -54,29 +61,14 @@ output:
             lambda: return state;
           then:
             - light.turn_on:
-                id: atom_led
+                id: lolin_c3_mini_led
                 red: 0%
                 green: 100%
                 blue: 0%
                 brightness: 80%
           else:
-            - light.turn_off: atom_led
-
-# Physical button triggers safe-mode flash
-binary_sensor:
-  - platform: gpio
-    pin:
-      number: GPIO41
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: gpio_button
-    filters:
-      - delayed_on: 10ms
-    on_press:
-      - button.press: safe_mode_button
+            - light.turn_off: lolin_c3_mini_led
 
 dashboard_import:
-  package_import_url: github://htumanyan/esphome-navien/esphome/packages/navien-esphome-atoms3-lite-rs485base-esp32.yaml@main
+  package_import_url: github://htumanyan/navien/esphome/packages/navien-esphome-lolin-c3-mini.yaml@main
   import_full_config: false
