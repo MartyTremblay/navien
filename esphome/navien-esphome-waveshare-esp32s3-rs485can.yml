@@ -209,3 +209,12 @@ sensor:
     lambda: |-
       int v = id(navien_main).water_byte(21);
       return v < 0 ? NAN : (float) v;
+  # Error events counted on the ESP (each latched error = 1), kept across restarts
+  - platform: template
+    name: "${friendly_name} Error Count"
+    icon: mdi:alert-circle-check-outline
+    state_class: total_increasing
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      return (float) id(navien_main).error_count();
