@@ -304,7 +304,21 @@ namespace navien {
     float get_sh_set_temp_c() const { return state.gas.sh_set_temp; }
     bool has_data() const { return is_connected; }
 
+    // Raw byte of the last water / gas status packet, by packet offset (the
+    // numbering used in navien_proto.h: data starts at 6). -1 until one has
+    // arrived or when out of range. For identifying unknown fields.
+    int water_byte(uint8_t offset) const { return raw_byte_(water_raw_, water_raw_len_, offset); }
+    int gas_byte(uint8_t offset) const { return raw_byte_(gas_raw_, gas_raw_len_, offset); }
+
   protected:
+    static int raw_byte_(const uint8_t *raw, uint8_t len, uint8_t offset) {
+      return (offset >= HDR_SIZE && offset - HDR_SIZE < len) ? raw[offset - HDR_SIZE] : -1;
+    }
+    uint8_t water_raw_[sizeof(WATER_DATA)] = {};
+    uint8_t water_raw_len_ = 0;
+    uint8_t gas_raw_[sizeof(GAS_DATA)] = {};
+    uint8_t gas_raw_len_ = 0;
+
     // Debug helper to print hex buffers
     static void print_buffer(const uint8_t *data, size_t length);
 

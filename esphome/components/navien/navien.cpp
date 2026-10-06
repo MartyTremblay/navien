@@ -91,6 +91,9 @@ void NavienBase::send_scheduled_recirculation_off_cmd() {
       return;
     }
 
+    memcpy(this->water_raw_, &water, sizeof(WATER_DATA));
+    this->water_raw_len_ = sizeof(WATER_DATA);
+
     ESP_LOGD(TAG, "SRC:0x%02X Received Temp: 0x%02X, Inlet: 0x%02X, Outlet: 0x%02X, Flow: 0x%02X, Sys Power: 0x%02X, Sys Status: 0x%02X, Recirc Enabled: 0x%02X, "
                   "Err Code:0x%02X 0x%02X, Err Lvl:0x%02X",
              src,
@@ -165,6 +168,9 @@ void NavienBase::send_scheduled_recirculation_off_cmd() {
     if (src != PACKET_SRC_STATUS + this->src_) {
       return;
     }
+
+    memcpy(this->gas_raw_, &gas, sizeof(GAS_DATA));
+    this->gas_raw_len_ = sizeof(GAS_DATA);
 
     ESP_LOGD(TAG, "SRC:0x%02X Received Gas DHW Temp: 0x%02X, Inlet: 0x%02X, Outlet: 0x%02X, SH Temp: 0x%02X",
        src,
