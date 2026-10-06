@@ -56,3 +56,23 @@ dashboard_import:
 button:
   - platform: navien
     name: ${friendly_name} Hot Button
+
+# Space-heating supply setpoint over RS485 (upstream #81, verified on NCB-H).
+# Testing on NHB-H. Shows the unit's reported value, so a rejected command
+# snaps back. With outdoor reset active, the boiler's curve overrides this.
+number:
+  - platform: template
+    name: "${friendly_name} SH Setpoint"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    min_value: 40       # NHB default SH supply range 40-82 C
+    max_value: 82
+    step: 0.5
+    mode: box
+    update_interval: 2s
+    lambda: |-
+      if (!id(navien_main).has_data()) return NAN;
+      return id(navien_main).get_sh_set_temp_c();
+    set_action:
+      - lambda: |-
+          id(navien_main).send_sh_set_temp_cmd(x);
