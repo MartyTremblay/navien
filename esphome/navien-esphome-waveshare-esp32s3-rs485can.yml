@@ -38,12 +38,6 @@ packages:
 
 uart:
   flow_control_pin: ${flow_control_pin}
-  # TEMPORARY: raw byte logging for NHB-H command diagnosis
-  debug:
-    direction: BOTH
-    dummy_receiver: false
-    after:
-      timeout: 10ms
 
 # Navien reports temperatures in 0.5 °C steps
 climate:
@@ -52,7 +46,7 @@ climate:
       temperature_step: 0.5
 
 logger:
-  level: DEBUG  # TEMPORARY: NHB-H command diagnosis, back to INFO afterwards
+  level: INFO
   baud_rate: 0 #disable logging over uart
 
 dashboard_import:
