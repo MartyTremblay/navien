@@ -104,3 +104,108 @@ number:
     set_action:
       - lambda: |-
           id(navien_main).send_dhw_set_temp_cmd(x);
+
+# Candidate fields from unknown packet bytes (NHB-110H, 2026-10-06 snapshot).
+# Values matched the unit's panel / manual defaults once; unconfirmed until
+# watched over time. Offsets are packet offsets as numbered in navien_proto.h.
+sensor:
+  # water[39] = 0xA4 = 82 C, the panel's DHW Boiler Set Temp (likely)
+  - platform: template
+    name: "${friendly_name} DHW Boiler Set Temp"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(39);
+      return v < 0 ? NAN : v / 2.0f;
+  # gas[44] = 82 C, manual default supply absolute max (likely)
+  - platform: template
+    name: "${friendly_name} SH Supply Max Temp"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).gas_byte(44);
+      return v < 0 ? NAN : v / 2.0f;
+  # gas[45] = 40 C, manual default supply absolute min (likely)
+  - platform: template
+    name: "${friendly_name} SH Supply Min Temp"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).gas_byte(45);
+      return v < 0 ? NAN : v / 2.0f;
+  # gas[42] = 65 C, manual default return absolute max (likely)
+  - platform: template
+    name: "${friendly_name} SH Return Max Temp"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).gas_byte(42);
+      return v < 0 ? NAN : v / 2.0f;
+  # gas[43] = 30 C, manual default return absolute min (likely)
+  - platform: template
+    name: "${friendly_name} SH Return Min Temp"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).gas_byte(43);
+      return v < 0 ? NAN : v / 2.0f;
+  # water[34..35] little-endian = 11690: a runtime in minutes, or two separate bytes?
+  - platform: template
+    name: "${friendly_name} Unknown W34-35"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int lo = id(navien_main).water_byte(34), hi = id(navien_main).water_byte(35);
+      return (lo < 0 || hi < 0) ? NAN : (float) (lo | (hi << 8));
+  # water[34] = 0xAA (170; 85 C if a temperature)
+  - platform: template
+    name: "${friendly_name} Unknown W34"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(34);
+      return v < 0 ? NAN : (float) v;
+  # water[35] = 0x2D (45)
+  - platform: template
+    name: "${friendly_name} Unknown W35"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(35);
+      return v < 0 ? NAN : (float) v;
+  # water[21] = 0x64 (100): SH max heat capacity %?
+  - platform: template
+    name: "${friendly_name} Unknown W21"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(21);
+      return v < 0 ? NAN : (float) v;
