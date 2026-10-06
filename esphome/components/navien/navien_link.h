@@ -219,6 +219,17 @@ protected:
   uint8_t unit_sys_type_{0};
   // Write a control packet, matching the unit's system type where needed
   void write_packet_(const uint8_t *data, uint8_t len);
+
+  // Transmit only into a quiet bus. Writing the instant a packet ends can
+  // land on top of the unit's next packet - the NCB-H sends its gas and water
+  // status packets back to back - and the command is silently lost.
+  // receive() arms a reply when a packet ends; transmit_if_quiet() sends it
+  // once the bus has been silent for TX_QUIET_MS.
+  static const uint32_t TX_QUIET_MS = 20;  // ~40 byte-times at 19200 baud
+  void transmit_if_quiet();
+  bool     tx_armed_ = false;                // a packet ended; a reply slot is owed
+  bool     tx_after_other_present_ = false;  // that packet was another NaviLink's PRESENT
+  uint32_t last_rx_ms_ = 0;                  // last time bytes were seen on the bus
 };
 
   
