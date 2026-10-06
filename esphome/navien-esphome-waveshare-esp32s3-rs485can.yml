@@ -39,11 +39,20 @@ packages:
 uart:
   flow_control_pin: ${flow_control_pin}
 
-# Navien reports temperatures in 0.5 °C steps
+# Navien reports temperatures in 0.5 °C steps. On this NHB-H the DHW entities
+# show the indirect tank (setpoint and tank temperature), so use a tank range;
+# the boiler clamps anything it doesn't accept.
 climate:
   - id: !extend navien_climate
     visual:
+      min_temperature: 40
+      max_temperature: 70
       temperature_step: 0.5
+
+water_heater:
+  - id: !extend navien_water_heater
+    min_temperature: 40
+    max_temperature: 70
 
 logger:
   level: INFO
