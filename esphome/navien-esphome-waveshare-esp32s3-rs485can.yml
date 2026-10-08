@@ -39,6 +39,10 @@ packages:
 uart:
   flow_control_pin: ${flow_control_pin}
 
+# No web UI on this device: Home Assistant uses the native API, and an
+# unauthenticated web server lets anything on the LAN change settings.
+web_server: !remove
+
 # Navien reports temperatures in 0.5 °C steps. On this NHB-H the DHW entities
 # show the indirect tank (setpoint and tank temperature), so use a tank range;
 # the boiler clamps anything it doesn't accept.
