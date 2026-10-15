@@ -44,19 +44,20 @@ uart:
 web_server: !remove
 
 # Navien reports temperatures in 0.5 °C steps. On this NHB-H the DHW entities
-# show the indirect tank (setpoint and tank temperature), so use a tank range;
+# show the indirect tank (setpoint and tank temperature), so use the tank range
+# from Navien's NHB-H manual (DHW Tank Set Temp 30-65 C, p. 107);
 # the boiler clamps anything it doesn't accept.
 climate:
   - id: !extend navien_climate
     visual:
       min_temperature: 40
-      max_temperature: 70
+      max_temperature: 65
       temperature_step: 0.5
 
 water_heater:
   - id: !extend navien_water_heater
     min_temperature: 40
-    max_temperature: 70
+    max_temperature: 65
 
 logger:
   level: INFO
