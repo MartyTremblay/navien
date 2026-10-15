@@ -52,12 +52,18 @@ climate:
     visual:
       min_temperature: 40
       max_temperature: 65
-      temperature_step: 0.5
+      # The tank setpoint takes whole degrees only (54.5 C was ignored, 55 C
+      # applied); the tank temperature is still reported in 0.5 C steps.
+      temperature_step:
+        target_temperature: 1
+        current_temperature: 0.5
 
 water_heater:
   - id: !extend navien_water_heater
     min_temperature: 40
     max_temperature: 65
+    visual:
+      target_temperature_step: 1
 
 logger:
   level: INFO
