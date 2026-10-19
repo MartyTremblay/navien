@@ -220,6 +220,146 @@ sensor:
     lambda: |-
       int v = id(navien_main).water_byte(21);
       return v < 0 ? NAN : (float) v;
+  # Candidate bytes for the still-undocumented range of the WATER_DATA packet
+  # (community navien_proto.h has no name for any of these), added 2026-10-19
+  # while hunting for a water-pressure field: Navien's own NHB-H manual
+  # documents a real Water Pressure Sensor (system pressure display, a "Water
+  # Press (psi)" diagnostic item, and fault codes E302/E352/E353), but no
+  # community decode or prior pass through this file has identified which
+  # byte it is. These are diagnostic-only, meant to be watched through a
+  # heating cycle and then trimmed back down to whichever one (if any) rises
+  # smoothly with supply temperature; the rest should be deleted once this
+  # is resolved, not kept around permanently.
+  - platform: template
+    name: "${friendly_name} Unknown W19"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(19);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W20"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(20);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W22"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(22);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W23"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(23);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W26"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(26);
+      return v < 0 ? NAN : (float) v;
+  # Community decode labels 28/29 and 30/31 as "Counter A"/"Counter B" lo/hi
+  # pairs, "pinned to 255 on NCB-H models" (a different Navien model than
+  # this NHB-H, so still worth checking, just a weaker candidate than a
+  # fully blank byte).
+  - platform: template
+    name: "${friendly_name} Unknown W28"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(28);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W29"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(29);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W30"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(30);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W31"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(31);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W32"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(32);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W33"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(33);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W36"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(36);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W37"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(37);
+      return v < 0 ? NAN : (float) v;
+  - platform: template
+    name: "${friendly_name} Unknown W38"
+    state_class: measurement
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: |-
+      int v = id(navien_main).water_byte(38);
+      return v < 0 ? NAN : (float) v;
   # Error events counted on the ESP (each latched error = 1), kept across restarts
   - platform: template
     name: "${friendly_name} Error Count"
